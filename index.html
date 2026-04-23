@@ -1,0 +1,945 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Amusu Oluwadamilare — Web3 Growth & Community</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #050A0F;
+    --surface: #0D1820;
+    --border: #1A2E3F;
+    --accent: #00F5C3;
+    --accent2: #0CF;
+    --accent3: #FF6B35;
+    --text: #E8F4F0;
+    --muted: #6B8FA0;
+    --card: #0A1520;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Mono', monospace;
+    overflow-x: hidden;
+    cursor: none;
+  }
+
+  /* Custom cursor */
+  .cursor {
+    width: 12px; height: 12px;
+    background: var(--accent);
+    border-radius: 50%;
+    position: fixed;
+    top: 0; left: 0;
+    pointer-events: none;
+    z-index: 9999;
+    transition: transform 0.1s ease;
+    mix-blend-mode: difference;
+  }
+  .cursor-ring {
+    width: 36px; height: 36px;
+    border: 1px solid var(--accent);
+    border-radius: 50%;
+    position: fixed;
+    top: 0; left: 0;
+    pointer-events: none;
+    z-index: 9998;
+    transition: transform 0.15s ease, width 0.2s, height 0.2s;
+    opacity: 0.5;
+  }
+
+  /* Grid bg texture */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(0,245,195,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,245,195,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* Glow orbs */
+  .orb {
+    position: fixed;
+    border-radius: 50%;
+    filter: blur(120px);
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.15;
+  }
+  .orb-1 { width: 500px; height: 500px; background: var(--accent); top: -100px; right: -100px; }
+  .orb-2 { width: 400px; height: 400px; background: var(--accent2); bottom: 10%; left: -100px; }
+  .orb-3 { width: 300px; height: 300px; background: var(--accent3); top: 50%; right: 10%; opacity: 0.08; }
+
+  /* NAV */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    padding: 1.25rem 3rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(5,10,15,0.8);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+  }
+  .nav-logo {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 1.1rem;
+    color: var(--accent);
+    letter-spacing: 0.05em;
+  }
+  .nav-links { display: flex; gap: 2.5rem; list-style: none; }
+  .nav-links a {
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 0.75rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    transition: color 0.2s;
+    position: relative;
+  }
+  .nav-links a::after {
+    content: '';
+    position: absolute;
+    bottom: -4px; left: 0;
+    width: 0; height: 1px;
+    background: var(--accent);
+    transition: width 0.3s;
+  }
+  .nav-links a:hover { color: var(--accent); }
+  .nav-links a:hover::after { width: 100%; }
+
+  /* SECTIONS */
+  section {
+    position: relative;
+    z-index: 1;
+    padding: 7rem 3rem;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  /* HERO */
+  #hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding-top: 8rem;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding-left: 3rem;
+    padding-right: 3rem;
+  }
+  .hero-label {
+    font-size: 0.72rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 1.5rem;
+    opacity: 0;
+    animation: fadeUp 0.6s 0.2s forwards;
+  }
+  .hero-name {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: clamp(3.5rem, 8vw, 7rem);
+    line-height: 0.95;
+    letter-spacing: -0.02em;
+    margin-bottom: 0.2em;
+    opacity: 0;
+    animation: fadeUp 0.7s 0.4s forwards;
+  }
+  .hero-name span { color: var(--accent); }
+  .hero-role {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(1.1rem, 2.5vw, 1.6rem);
+    color: var(--muted);
+    margin-bottom: 2rem;
+    opacity: 0;
+    animation: fadeUp 0.7s 0.6s forwards;
+  }
+  .hero-desc {
+    max-width: 560px;
+    font-size: 0.9rem;
+    line-height: 1.8;
+    color: #8AAABB;
+    margin-bottom: 3rem;
+    opacity: 0;
+    animation: fadeUp 0.7s 0.8s forwards;
+  }
+  .hero-ctas {
+    display: flex; gap: 1rem; flex-wrap: wrap;
+    opacity: 0;
+    animation: fadeUp 0.7s 1s forwards;
+  }
+  .btn-primary {
+    padding: 0.85rem 2rem;
+    background: var(--accent);
+    color: var(--bg);
+    font-family: 'DM Mono', monospace;
+    font-size: 0.78rem;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    text-decoration: none;
+    border: none;
+    cursor: none;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0 30px rgba(0,245,195,0.4);
+  }
+  .btn-outline {
+    padding: 0.85rem 2rem;
+    background: transparent;
+    color: var(--text);
+    font-family: 'DM Mono', monospace;
+    font-size: 0.78rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    text-decoration: none;
+    border: 1px solid var(--border);
+    cursor: none;
+    transition: border-color 0.2s, color 0.2s;
+  }
+  .btn-outline:hover { border-color: var(--accent); color: var(--accent); }
+
+  .hero-stats {
+    display: flex; gap: 3rem; margin-top: 5rem;
+    opacity: 0;
+    animation: fadeUp 0.7s 1.2s forwards;
+    padding-top: 3rem;
+    border-top: 1px solid var(--border);
+  }
+  .stat-item {}
+  .stat-num {
+    font-family: 'Syne', sans-serif;
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--accent);
+  }
+  .stat-label {
+    font-size: 0.7rem;
+    color: var(--muted);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-top: 0.3rem;
+  }
+
+  /* SECTION HEADERS */
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    margin-bottom: 3.5rem;
+  }
+  .section-tag {
+    font-size: 0.68rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--accent);
+    padding: 0.3rem 0.8rem;
+    border: 1px solid rgba(0,245,195,0.3);
+    background: rgba(0,245,195,0.05);
+  }
+  .section-line {
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+  .section-title {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(1.8rem, 4vw, 2.8rem);
+    font-weight: 800;
+    line-height: 1.1;
+    margin-bottom: 1rem;
+  }
+
+  /* ABOUT */
+  .about-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    align-items: center;
+  }
+  .about-text p {
+    font-size: 0.9rem;
+    line-height: 1.9;
+    color: #8AAABB;
+    margin-bottom: 1.2rem;
+  }
+  .about-badges {
+    display: flex; flex-wrap: wrap; gap: 0.6rem; margin-top: 2rem;
+  }
+  .badge {
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    padding: 0.35rem 0.8rem;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    background: var(--card);
+    transition: border-color 0.2s, color 0.2s;
+  }
+  .badge:hover { border-color: var(--accent); color: var(--accent); }
+  .about-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    padding: 2.5rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .about-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+  }
+  .contact-list { list-style: none; display: flex; flex-direction: column; gap: 1rem; }
+  .contact-list li {
+    display: flex; align-items: center; gap: 1rem;
+    font-size: 0.8rem;
+    color: var(--muted);
+  }
+  .contact-list li a {
+    color: var(--text);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+  .contact-list li a:hover { color: var(--accent); }
+  .c-icon {
+    width: 36px; height: 36px;
+    border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1rem;
+    flex-shrink: 0;
+    background: var(--surface);
+  }
+
+  /* SKILLS */
+  .skills-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+  }
+  .skill-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    padding: 1.8rem;
+    position: relative;
+    overflow: hidden;
+    transition: border-color 0.3s, transform 0.2s;
+  }
+  .skill-card:hover {
+    border-color: var(--accent);
+    transform: translateY(-3px);
+  }
+  .skill-card::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0;
+    width: 0; height: 2px;
+    background: var(--accent);
+    transition: width 0.4s;
+  }
+  .skill-card:hover::after { width: 100%; }
+  .skill-icon {
+    font-size: 1.6rem;
+    margin-bottom: 0.8rem;
+  }
+  .skill-name {
+    font-family: 'Syne', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    color: var(--text);
+  }
+  .skill-desc {
+    font-size: 0.75rem;
+    color: var(--muted);
+    line-height: 1.7;
+  }
+
+  /* EXPERIENCE */
+  .exp-timeline {
+    position: relative;
+    padding-left: 2rem;
+  }
+  .exp-timeline::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 1px;
+    background: linear-gradient(to bottom, var(--accent), transparent);
+  }
+  .exp-item {
+    position: relative;
+    padding: 0 0 3rem 2.5rem;
+  }
+  .exp-item::before {
+    content: '';
+    position: absolute;
+    left: -5px; top: 6px;
+    width: 10px; height: 10px;
+    background: var(--accent);
+    border-radius: 50%;
+    box-shadow: 0 0 12px var(--accent);
+  }
+  .exp-date {
+    font-size: 0.7rem;
+    letter-spacing: 0.15em;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin-bottom: 0.5rem;
+  }
+  .exp-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.3rem;
+    font-weight: 700;
+    margin-bottom: 0.3rem;
+  }
+  .exp-company {
+    font-size: 0.8rem;
+    color: var(--muted);
+    margin-bottom: 1.2rem;
+  }
+  .exp-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+  .exp-list li {
+    font-size: 0.82rem;
+    color: #8AAABB;
+    line-height: 1.7;
+    padding-left: 1.2rem;
+    position: relative;
+  }
+  .exp-list li::before {
+    content: '→';
+    position: absolute;
+    left: 0;
+    color: var(--accent);
+  }
+
+  /* PROJECTS */
+  .projects-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 1.5rem;
+  }
+  .project-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    padding: 2.2rem;
+    position: relative;
+    overflow: hidden;
+    transition: border-color 0.3s, transform 0.2s;
+  }
+  .project-card:hover {
+    border-color: rgba(0,245,195,0.5);
+    transform: translateY(-4px);
+  }
+  .project-num {
+    font-family: 'Syne', sans-serif;
+    font-size: 3rem;
+    font-weight: 800;
+    color: var(--border);
+    position: absolute;
+    top: 1rem; right: 1.5rem;
+    line-height: 1;
+    transition: color 0.3s;
+  }
+  .project-card:hover .project-num { color: rgba(0,245,195,0.15); }
+  .project-tag {
+    font-size: 0.65rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 1rem;
+  }
+  .project-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.15rem;
+    font-weight: 700;
+    margin-bottom: 0.8rem;
+    line-height: 1.3;
+  }
+  .project-desc {
+    font-size: 0.78rem;
+    color: var(--muted);
+    line-height: 1.8;
+    margin-bottom: 1.5rem;
+  }
+  .project-highlights {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+  .project-highlights li {
+    font-size: 0.72rem;
+    color: #6B8FA0;
+    padding-left: 1rem;
+    position: relative;
+  }
+  .project-highlights li::before {
+    content: '·';
+    position: absolute; left: 0;
+    color: var(--accent);
+  }
+
+  /* EDUCATION */
+  .edu-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    padding: 2.5rem;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 2rem;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+    transition: border-color 0.3s;
+  }
+  .edu-card:hover { border-color: var(--accent); }
+  .edu-card::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 3px;
+    background: linear-gradient(to bottom, var(--accent), var(--accent2));
+  }
+  .edu-degree {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.4rem;
+    font-weight: 800;
+    margin-bottom: 0.4rem;
+  }
+  .edu-school {
+    font-size: 0.85rem;
+    color: var(--muted);
+    margin-bottom: 0.2rem;
+  }
+  .edu-field {
+    font-size: 0.75rem;
+    color: var(--accent);
+    letter-spacing: 0.1em;
+  }
+  .edu-year {
+    font-family: 'Syne', sans-serif;
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: var(--border);
+    white-space: nowrap;
+  }
+
+  /* FOOTER */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 3rem;
+    text-align: center;
+    position: relative;
+    z-index: 1;
+  }
+  .footer-name {
+    font-family: 'Syne', sans-serif;
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--accent);
+    margin-bottom: 0.5rem;
+  }
+  .footer-tag {
+    font-size: 0.75rem;
+    color: var(--muted);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: 2rem;
+  }
+  .footer-links {
+    display: flex; gap: 2rem; justify-content: center; flex-wrap: wrap;
+    margin-bottom: 2rem;
+  }
+  .footer-links a {
+    font-size: 0.75rem;
+    color: var(--muted);
+    text-decoration: none;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    transition: color 0.2s;
+  }
+  .footer-links a:hover { color: var(--accent); }
+  .footer-copy {
+    font-size: 0.65rem;
+    color: var(--border);
+    letter-spacing: 0.1em;
+  }
+
+  /* ANIMATIONS */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .reveal {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+  .reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* SCROLLBAR */
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border); }
+  ::-webkit-scrollbar-thumb:hover { background: var(--accent); }
+
+  /* RESPONSIVE */
+  @media (max-width: 768px) {
+    nav { padding: 1rem 1.5rem; }
+    .nav-links { display: none; }
+    #hero, section { padding-left: 1.5rem; padding-right: 1.5rem; }
+    .hero-stats { gap: 2rem; flex-wrap: wrap; }
+    .about-grid { grid-template-columns: 1fr; gap: 2rem; }
+    .edu-card { grid-template-columns: 1fr; }
+    .edu-year { font-size: 1.5rem; }
+  }
+
+  /* Scroll indicator */
+  .scroll-indicator {
+    position: absolute;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    opacity: 0;
+    animation: fadeUp 0.6s 1.8s forwards;
+  }
+  .scroll-line {
+    width: 1px;
+    height: 50px;
+    background: linear-gradient(to bottom, var(--accent), transparent);
+    animation: scrollPulse 2s ease-in-out infinite;
+  }
+  .scroll-text {
+    font-size: 0.6rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  @keyframes scrollPulse {
+    0%, 100% { opacity: 0.4; transform: scaleY(1); }
+    50% { opacity: 1; transform: scaleY(1.1); }
+  }
+</style>
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<div class="orb orb-1"></div>
+<div class="orb orb-2"></div>
+<div class="orb orb-3"></div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">A.O</div>
+  <ul class="nav-links">
+    <li><a href="#about">About</a></li>
+    <li><a href="#skills">Skills</a></li>
+    <li><a href="#experience">Experience</a></li>
+    <li><a href="#projects">Projects</a></li>
+    <li><a href="#education">Education</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <p class="hero-label">// Web3 Growth Specialist</p>
+  <h1 class="hero-name">Amusu<br><span>Oluwadamilare</span></h1>
+  <p class="hero-role">Web3 Enthusiast · Community Builder · Growth Partner</p>
+  <p class="hero-desc">
+    Motivated and self-driven Web3 specialist with a strong interest in growth, community building, and affiliate partnerships. Active within the crypto ecosystem across X, Telegram, and Discord.
+  </p>
+  <div class="hero-ctas">
+    <a href="#contact" class="btn-primary">Get In Touch →</a>
+    <a href="#experience" class="btn-outline">View Experience</a>
+  </div>
+  <div class="hero-stats">
+    <div class="stat-item">
+      <div class="stat-num">1+</div>
+      <div class="stat-label">Years in Web3</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num">3+</div>
+      <div class="stat-label">Platforms Active</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num">∞</div>
+      <div class="stat-label">Opportunities</div>
+    </div>
+  </div>
+  <div class="scroll-indicator">
+    <div class="scroll-line"></div>
+    <span class="scroll-text">Scroll</span>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section id="about">
+  <div class="section-header reveal">
+    <span class="section-tag">01 / About</span>
+    <div class="section-line"></div>
+  </div>
+  <div class="about-grid">
+    <div class="about-text reveal">
+      <h2 class="section-title">Bridging communities,<br>building <span style="color:var(--accent)">growth</span>.</h2>
+      <p>
+        Based in Lagos, Nigeria, I'm a Web3 enthusiast who found my passion at the intersection of decentralized technology and community growth. Since 2024, I've been deeply embedded in the crypto ecosystem — researching projects, engaging communities, and identifying growth opportunities.
+      </p>
+      <p>
+        My background in Mathematics from Lagos State University of Education gives me a sharp analytical lens, while my hands-on Web3 experience equips me with the practical skills to execute high-quality outreach and partnership strategies.
+      </p>
+      <p>
+        I thrive in remote environments and am comfortable executing high-volume outreach, following up consistently, and building long-term relationships that drive real growth.
+      </p>
+      <div class="about-badges">
+        <span class="badge">Lagos, Nigeria</span>
+        <span class="badge">Remote-Ready</span>
+        <span class="badge">Web3 Native</span>
+        <span class="badge">DeFi Enthusiast</span>
+        <span class="badge">Community Builder</span>
+        <span class="badge">Growth Focused</span>
+      </div>
+    </div>
+    <div class="about-card reveal" id="contact">
+      <h3 style="font-family:'Syne',sans-serif;font-size:1rem;font-weight:700;margin-bottom:1.5rem;letter-spacing:0.05em;">Contact Info</h3>
+      <ul class="contact-list">
+        <li>
+          <span class="c-icon">📍</span>
+          <span>Lagos, Nigeria</span>
+        </li>
+        <li>
+          <span class="c-icon">📞</span>
+          <a href="tel:+2348118290908">+234 811 829 0908</a>
+        </li>
+        <li>
+          <span class="c-icon">✉️</span>
+          <a href="mailto:segun123damilare@gmail.com">segun123damilare@gmail.com</a>
+        </li>
+        <li>
+          <span class="c-icon">𝕏</span>
+          <a href="https://x.com/Daredizzy3" target="_blank">@Daredizzy3</a>
+        </li>
+        <li>
+          <span class="c-icon">in</span>
+          <a href="https://linkedin.com/in/oluwadamilare-amusu-5543512a0" target="_blank">LinkedIn Profile</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- SKILLS -->
+<section id="skills">
+  <div class="section-header reveal">
+    <span class="section-tag">02 / Skills</span>
+    <div class="section-line"></div>
+  </div>
+  <h2 class="section-title reveal">Core <span style="color:var(--accent)">Competencies</span></h2>
+  <br>
+  <div class="skills-grid">
+    <div class="skill-card reveal">
+      <div class="skill-icon">⛓️</div>
+      <div class="skill-name">Web3 & Crypto Ecosystem</div>
+      <div class="skill-desc">Deep familiarity with blockchain projects, DeFi protocols, NFTs, and the broader decentralized ecosystem. Stays current on trends and emerging opportunities.</div>
+    </div>
+    <div class="skill-card reveal">
+      <div class="skill-icon">🎯</div>
+      <div class="skill-name">Outreach & Lead Generation</div>
+      <div class="skill-desc">Skilled at identifying target communities and projects, crafting compelling outreach messages, and converting contacts into meaningful partnerships.</div>
+    </div>
+    <div class="skill-card reveal">
+      <div class="skill-icon">📡</div>
+      <div class="skill-name">Social Media Engagement</div>
+      <div class="skill-desc">Active and proficient across X (Twitter), Telegram, and Discord — the three pillars of Web3 community management and growth.</div>
+    </div>
+    <div class="skill-card reveal">
+      <div class="skill-icon">🗣️</div>
+      <div class="skill-name">Communication & Persuasion</div>
+      <div class="skill-desc">Ability to articulate value propositions clearly, adapt messaging to different audiences, and build trust through consistent, credible communication.</div>
+    </div>
+    <div class="skill-card reveal">
+      <div class="skill-icon">🤝</div>
+      <div class="skill-name">Affiliate Marketing</div>
+      <div class="skill-desc">Understanding of affiliate partnership structures in the Web3 space, including how to onboard quality partners and design mutually beneficial agreements.</div>
+    </div>
+    <div class="skill-card reveal">
+      <div class="skill-icon">🔁</div>
+      <div class="skill-name">Relationship Management</div>
+      <div class="skill-desc">Focused on building long-term relationships over transactional interactions, with consistent follow-through and genuine value creation for partners.</div>
+    </div>
+  </div>
+</section>
+
+<!-- EXPERIENCE -->
+<section id="experience">
+  <div class="section-header reveal">
+    <span class="section-tag">03 / Experience</span>
+    <div class="section-line"></div>
+  </div>
+  <h2 class="section-title reveal">What I've <span style="color:var(--accent)">Built</span></h2>
+  <br><br>
+  <div class="exp-timeline">
+    <div class="exp-item reveal">
+      <div class="exp-date">2024 — Present</div>
+      <h3 class="exp-title">Independent Web3 Research & Outreach</h3>
+      <p class="exp-company">Remote · Self-Directed</p>
+      <ul class="exp-list">
+        <li>Researched and tracked emerging Web3 projects, ecosystem trends, and active communities</li>
+        <li>Engaged with projects and community members on X, Telegram, and Discord</li>
+        <li>Developed strong understanding of how projects grow through marketing, community, and partnerships</li>
+        <li>Practiced and refined outreach messaging and audience engagement strategies</li>
+        <li>Identified opportunities for collaboration and ecosystem expansion across multiple chains</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- PROJECTS -->
+<section id="projects">
+  <div class="section-header reveal">
+    <span class="section-tag">04 / Projects</span>
+    <div class="section-line"></div>
+  </div>
+  <h2 class="section-title reveal">What I've <span style="color:var(--accent)">Created</span></h2>
+  <br>
+  <div class="projects-grid">
+    <div class="project-card reveal">
+      <div class="project-num">01</div>
+      <div class="project-tag">Content · Community</div>
+      <h3 class="project-title">Web3 Content & Engagement on X/Twitter</h3>
+      <p class="project-desc">An ongoing initiative to build presence and credibility in the Web3 space through consistent content creation and active community engagement.</p>
+      <ul class="project-highlights">
+        <li>Shared insights, threads, and discussions around Web3 projects and trends</li>
+        <li>Actively engaged with crypto communities and participated in high-value conversations</li>
+        <li>Built familiarity with project positioning, branding, and audience targeting</li>
+      </ul>
+    </div>
+    <div class="project-card reveal">
+      <div class="project-num">02</div>
+      <div class="project-tag">Research · Analysis</div>
+      <h3 class="project-title">Crypto Ecosystem Intelligence</h3>
+      <p class="project-desc">Ongoing research practice tracking emerging projects, protocols, and communities across the Web3 landscape to identify growth and partnership opportunities.</p>
+      <ul class="project-highlights">
+        <li>Monitored DeFi, NFT, and Layer 2 ecosystem developments</li>
+        <li>Tracked project launches, community growth patterns, and partnership strategies</li>
+        <li>Built a personal knowledge base of Web3 industry insights and relationships</li>
+      </ul>
+    </div>
+    <div class="project-card reveal">
+      <div class="project-num">03</div>
+      <div class="project-tag">Outreach · Growth</div>
+      <h3 class="project-title">Partnership Outreach Program</h3>
+      <p class="project-desc">Systematic outreach across Web3 communities to initiate conversations with projects looking for growth, marketing, and affiliate partnership opportunities.</p>
+      <ul class="project-highlights">
+        <li>Identified high-quality projects suitable for affiliate and community partnerships</li>
+        <li>Crafted tailored outreach messages adapted to each project's growth stage</li>
+        <li>Maintained consistent follow-up cycles to convert initial contact into relationships</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- EDUCATION -->
+<section id="education">
+  <div class="section-header reveal">
+    <span class="section-tag">05 / Education</span>
+    <div class="section-line"></div>
+  </div>
+  <h2 class="section-title reveal">Academic <span style="color:var(--accent)">Background</span></h2>
+  <br>
+  <div class="edu-card reveal">
+    <div>
+      <div class="edu-degree">B.Sc. Mathematics</div>
+      <div class="edu-school">Lagos State University of Education</div>
+      <div class="edu-field">// Analytical thinking · Problem solving · Quantitative reasoning</div>
+    </div>
+    <div class="edu-year">2026</div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-name">Amusu Oluwadamilare</div>
+  <div class="footer-tag">Web3 Growth Specialist · Lagos, Nigeria</div>
+  <div class="footer-links">
+    <a href="https://x.com/Daredizzy3" target="_blank">X / Twitter</a>
+    <a href="https://linkedin.com/in/oluwadamilare-amusu-5543512a0" target="_blank">LinkedIn</a>
+    <a href="tel:+2348118290908">Phone</a>
+    <a href="mailto:your@email.com">Email</a>
+  </div>
+  <div class="footer-copy">© 2025 Amusu Oluwadamilare · Built with purpose</div>
+</footer>
+
+<script>
+  // Custom cursor
+  const cursor = document.getElementById('cursor');
+  const ring = document.getElementById('cursorRing');
+  let mx = 0, my = 0, rx = 0, ry = 0;
+  document.addEventListener('mousemove', e => {
+    mx = e.clientX; my = e.clientY;
+    cursor.style.transform = `translate(${mx - 6}px, ${my - 6}px)`;
+  });
+  function animRing() {
+    rx += (mx - rx) * 0.12;
+    ry += (my - ry) * 0.12;
+    ring.style.transform = `translate(${rx - 18}px, ${ry - 18}px)`;
+    requestAnimationFrame(animRing);
+  }
+  animRing();
+  document.querySelectorAll('a, button, .skill-card, .project-card').forEach(el => {
+    el.addEventListener('mouseenter', () => {
+      cursor.style.transform += ' scale(1.5)';
+      ring.style.width = '50px';
+      ring.style.height = '50px';
+    });
+    el.addEventListener('mouseleave', () => {
+      ring.style.width = '36px';
+      ring.style.height = '36px';
+    });
+  });
+
+  // Scroll reveal
+  const obs = new IntersectionObserver((entries) => {
+    entries.forEach((e, i) => {
+      if (e.isIntersecting) {
+        setTimeout(() => e.target.classList.add('visible'), i * 80);
+      }
+    });
+  }, { threshold: 0.1 });
+  document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+</script>
+</body>
+</html>
